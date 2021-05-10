@@ -213,8 +213,13 @@ namespace MSIX {
         m_zipObject->GetZip64Locator().SetData(static_cast<std::uint64_t>(startOfZip64EndOfCds.QuadPart));
         m_zipObject->GetZip64Locator().WriteTo(stream);
 
-        // Because we only use zip64, EndCentralDirectoryRecord never changes
-        m_zipObject->GetEndCentralDirectoryRecord().WriteTo(stream);
+        // Because we only use zip64, EndCentralDirectoryRecord should never change.
+        // However, though the hash requires 0 for "number of this disk" and
+        // "number of the disk with the start of the central directory" fields,
+        // MakeAppx will put 0xffff here (deferring to the Zip64 header).
+        // In order to hash consistently, write a fixed record. This is consistent
+        // with signtool.
+        EndCentralDirectoryRecord().WriteTo(stream);
     }
 
     void ZipObjectWriter::Close()
