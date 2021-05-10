@@ -20,6 +20,7 @@ if(MSIX_PACK)
     list(APPEND MSIX_PACK_EXPORTS
         "PackPackage"
         "SignPackage"
+        "AttachSignature"
     )
 endif()
 

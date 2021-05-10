@@ -630,6 +630,37 @@ Command CreateSignCommand()
 
     return result;
 }
+
+Command CreateAttachCommand()
+{
+    Command result{ "attach", "Attach a pre-signed digest",
+        {
+            Option{ "-p", "Package file path.", true, 1, "package" },
+            Option{ "-s", "Signature file name.", true, 1, "signature" },
+            Option{ TOOL_HELP_COMMAND_STRING, "Displays this help text." },
+        }
+    };
+
+    result.SetDescription({
+        "Replaces AppxSignature.p7x, allowing for external signing.",
+        "The package must have already been signed.",
+        "",
+        "WARNING: EXPERIMENTAL! Does not check that the signature applies to this package",
+        "         or that the package was already signed!"
+        });
+
+    result.SetInvocationFunc([](const Invocation& invocation)
+        {
+            std::cout << "WARNING: The attach feature is not complete, see the help for this command for more information." << std::endl;
+            std::cout << std::endl;
+
+            return AttachSignature(
+                const_cast<char*>(invocation.GetOptionValue("-p").c_str()),
+                const_cast<char*>(invocation.GetOptionValue("-s").c_str()));
+        });
+
+    return result;
+}
 #endif
 
 #pragma endregion
@@ -646,6 +677,7 @@ int main(int argc, char* argv[])
         #ifdef MSIX_PACK
         CreatePackCommand(),
         CreateSignCommand(),
+        CreateAttachCommand(),
         #endif
     };
 

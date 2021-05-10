@@ -112,6 +112,35 @@ void SignPackage(
     packageWriter->Close(signingCertificateFormat, signingCertificate, privateKey);
 }
 
+void AttachSignature(
+    IAppxPackageReader* package,
+    IStream* signature)
+{
+    auto packageAsIPackage = ComPtr<IPackage>::From(package);
+    auto underlyingStorage = packageAsIPackage->GetUnderlyingStorageObject();
+    auto underlyingZipObject = underlyingStorage.As<IZipObject>();
+
+    auto factory = packageAsIPackage->GetFactory();
+    auto zipWriter = ComPtr<IZipWriter>::Make<ZipObjectWriter>(underlyingZipObject.Get());
+
+    zipWriter->RemoveFiles({ APPXSIGNATURE_P7X });
+
+    {
+      std::unique_ptr<AppxPackageWriter> packageWriter(new AppxPackageWriter(factory.Get(), zipWriter));
+      ThrowHrIfFailed(packageWriter->AddSignatureFile(signature));
+      // packageWriter is destroyed without calling Close, to avoid rewriting anything else.
+    }
+
+    zipWriter->Close();
+
+    // Ensure that the stream does not have any additional data hanging off the end
+    ComPtr<IStream> zipStream = zipWriter.As<IZipObject>()->GetStream();
+    ULARGE_INTEGER fileSize = { 0 };
+    ThrowHrIfFailed(zipStream->Seek({ 0 }, StreamBase::Reference::CURRENT, &fileSize));
+    ThrowHrIfFailed(zipStream->SetSize(fileSize));
+}
+
+
 // SignatureAccumulator
 
 std::unique_ptr<SignatureAccumulator::FileAccumulator> SignatureAccumulator::GetFileAccumulator(std::string partName)

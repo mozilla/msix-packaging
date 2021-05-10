@@ -337,4 +337,30 @@ MSIX_API HRESULT STDMETHODCALLTYPE SignPackage(
     return static_cast<HRESULT>(MSIX::Error::OK);
 } CATCH_RETURN();
 
+MSIX_API HRESULT STDMETHODCALLTYPE AttachSignature(
+    LPCSTR package,
+    LPCSTR signature
+) noexcept try
+{
+    ThrowErrorIf(MSIX::Error::InvalidParameter,
+        (package == nullptr || signature == nullptr),
+        "Invalid parameters");
+
+    MSIX::ComPtr<IStream> packageStream = 
+        MSIX::ComPtr<IStream>::Make<MSIX::FileStream>(MSIX::utf8_to_wstring(package).c_str(), MSIX::FileStream::Mode::READ_UPDATE);
+
+    MSIX::ComPtr<IStream> signatureStream;
+    ThrowHrIfFailed(CreateStreamOnFile(signature, true, &signatureStream));
+
+    MSIX::ComPtr<IAppxFactory> factory;
+    ThrowHrIfFailed(CoCreateAppxFactoryWithHeap(InternalAllocate, InternalFree, MSIX_VALIDATION_NONE, &factory));
+
+    MSIX::ComPtr<IAppxPackageReader> reader;
+    ThrowHrIfFailed(factory->CreatePackageReader(packageStream.Get(), &reader));
+
+    MSIX::AttachSignature(reader.Get(), signatureStream.Get());
+
+    return static_cast<HRESULT>(MSIX::Error::OK);
+} CATCH_RETURN();
+
 #endif // MSIX_PACK

@@ -214,6 +214,13 @@ namespace MSIX {
         return static_cast<HRESULT>(Error::OK);
     } CATCH_RETURN();
 
+    HRESULT AppxPackageWriter::AddSignatureFile(IStream* stream) noexcept try
+    {
+        // Copied from the call in Close()
+        AddFileToPackage(APPXSIGNATURE_P7X, stream, true, false, nullptr, false, false);
+        return static_cast<HRESULT>(Error::OK);
+    } CATCH_RETURN();
+
     void AppxPackageWriter::ValidateAndAddPayloadFile(const std::string& name, IStream* stream,
         APPX_COMPRESSION_OPTION compressionOpt, const char* contentType)
     {

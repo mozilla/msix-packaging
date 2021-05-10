@@ -1757,6 +1757,11 @@ MSIX_API HRESULT STDMETHODCALLTYPE SignPackage(
     LPCSTR privateKey
 ) noexcept;
 
+MSIX_API HRESULT STDMETHODCALLTYPE AttachSignature(
+    LPCSTR package,
+    LPCSTR signature
+) noexcept;
+
 #endif // MSIX_PACK
 
 // A call to called CoCreateAppxFactory is required before start using the factory on non-windows platforms specifying

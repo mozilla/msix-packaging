@@ -71,6 +71,9 @@ namespace MSIX {
         HRESULT STDMETHODCALLTYPE AddPayloadFiles(UINT32 fileCount, APPX_PACKAGE_WRITER_PAYLOAD_STREAM_UTF8* payloadFiles,
             UINT64 memoryLimit) noexcept override;
 
+        // not on an interface
+        HRESULT STDMETHODCALLTYPE AddSignatureFile(IStream* inputStream) noexcept;
+
     protected:
         typedef enum
         {

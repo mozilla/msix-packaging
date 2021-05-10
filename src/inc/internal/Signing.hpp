@@ -30,6 +30,10 @@ MSIX_CERTIFICATE_FORMAT DetermineCertificateFormat(LPCSTR file);
 // Given a format, is a separate private key file required?
 bool DoesCertificateFormatRequirePrivateKey(MSIX_CERTIFICATE_FORMAT format);
 
+void AttachSignature(
+    IAppxPackageReader* package,
+    IStream* signature);
+
 // Signs a package in-place with the given certificate.
 void SignPackage(
     IAppxPackageReader* package,
