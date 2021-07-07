@@ -133,8 +133,6 @@ interface IAppxManifestOptionalPackageInfo;
 interface IAppxManifestMainPackageDependenciesEnumerator;
 interface IAppxManifestMainPackageDependency;
 
-extern "C"{
-
 #ifndef __IUnknown_INTERFACE_DEFINED__
 #define __IUnknown_INTERFACE_DEFINED__
 
@@ -1159,8 +1157,6 @@ enum tagLOCKTYPE
     };
 #endif 	/* __IAppxManifestMainPackageDependency_INTERFACE_DEFINED__ */
 
-
-} // extern "C"
 #endif // #ifdef WIN32
 
 // MSIX specific
