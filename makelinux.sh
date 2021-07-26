@@ -49,6 +49,9 @@ while [ "$1" != "" ]; do
                 ;;
         --skip-tests ) tests=off
                 ;;
+        -- )    shift
+                break
+                ;;
         * )     usage
                 exit 1
     esac
@@ -62,8 +65,7 @@ cd .vs
 # clean up any old builds of msix modules
 find . -depth -name *msix* | xargs -0 -r rm -rf
 
-echo "cmake -DCMAKE_BUILD_TYPE="$build "-DSKIP_BUNDLES="$bundle "-DUSE_VALIDATION_PARSER="$validationParser 
-echo "-DCMAKE_TOOLCHAIN_FILE=../cmake/linux.cmake" "-DMSIX_PACK="$pack "-DMSIX_SAMPLES="$samples "-DMSIX_TESTS="$tests "-DLINUX=on .."
+set -x
 cmake -DCMAKE_BUILD_TYPE=$build \
       -DSKIP_BUNDLES=$bundle \
       -DUSE_VALIDATION_PARSER=$validationParser \
@@ -71,5 +73,7 @@ cmake -DCMAKE_BUILD_TYPE=$build \
       -DMSIX_PACK=$pack \
       -DMSIX_SAMPLES=$samples \
       -DMSIX_TESTS=$tests \
-      -DLINUX=on ..
+      -DLINUX=on \
+      "$@" \
+      ..
 make
